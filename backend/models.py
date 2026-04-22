@@ -25,6 +25,28 @@ class PatientRecommendationResponse(BaseModel):
     total_due_soon: int
 
 
+class DiagnosisItem(BaseModel):
+    icd_code: str
+    icd_group: str
+    icd_name: Optional[str]
+    last_date: Optional[str]
+
+
+class DrugItem(BaseModel):
+    drug_code: str
+    drug_name: str
+    last_date: Optional[str]
+
+
+class PatientInfoResponse(BaseModel):
+    hn: str
+    patient_name: Optional[str]
+    age: Optional[int]
+    gender: Optional[str]
+    diagnoses: list[DiagnosisItem]
+    drugs: list[DrugItem]
+
+
 class RuleSummary(BaseModel):
     rule_code: str
     rule_name: str

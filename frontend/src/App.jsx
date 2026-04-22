@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import PatientSearch from './components/PatientSearch'
+import PatientSummary from './components/PatientSummary'
 import RecommendationTable from './components/RecommendationTable'
 
 export default function App() {
-  const [loading, setLoading] = useState(false)
-  const [data, setData]       = useState(null)
-  const [error, setError]     = useState(null)
+  const [loading, setLoading]         = useState(false)
+  const [data, setData]               = useState(null)
+  const [patientInfo, setPatientInfo] = useState(null)
+  const [error, setError]             = useState(null)
 
   const handleSearch = async (hn) => {
-    // hn = "7334/51"  →  run=7334, year=51
     const parts = hn.trim().split('/')
     if (parts.length !== 2 || !parts[0] || !parts[1]) {
       setError('กรุณากรอก HN ในรูปแบบ run/year เช่น 7334/51')
@@ -18,13 +19,20 @@ export default function App() {
     setLoading(true)
     setError(null)
     setData(null)
+    setPatientInfo(null)
     try {
-      const res = await fetch(`/api/patients/${run}/${year}/recommendations`)
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.detail || `HTTP ${res.status}`)
+      const [recRes, infoRes] = await Promise.all([
+        fetch(`/api/patients/${run}/${year}/recommendations`),
+        fetch(`/api/patients/${run}/${year}/info`).catch(() => null),
+      ])
+      if (!recRes.ok) {
+        const body = await recRes.json().catch(() => ({}))
+        throw new Error(body.detail || `HTTP ${recRes.status}`)
       }
-      setData(await res.json())
+      setData(await recRes.json())
+      if (infoRes && infoRes.ok) {
+        setPatientInfo(await infoRes.json().catch(() => null))
+      }
     } catch (e) {
       setError(e.message)
     } finally {
@@ -62,6 +70,7 @@ export default function App() {
             เกิดข้อผิดพลาด: {error}
           </div>
         )}
+        <PatientSummary info={patientInfo} />
         <RecommendationTable data={data} />
       </div>
     </div>

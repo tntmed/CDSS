@@ -4,7 +4,7 @@ Decision Engine — disease-based + drug-based (AED) lab monitoring
 import re
 from datetime import date, timedelta
 from ords_client import ords_get
-from models import LabRecommendation
+from models import LabRecommendation, DiagnosisItem, DrugItem, PatientInfoResponse
 
 _HN_RE = re.compile(r'^(\d+)/(\d+)$')
 
@@ -106,3 +106,31 @@ async def get_patient_name(hn: str) -> str | None:
         return data.get("patient_name") or None
     except Exception:
         return None
+
+
+async def get_patient_info(hn: str) -> PatientInfoResponse:
+    run, year = parse_hn(hn)
+    data = await ords_get(f"/cdss/patient_info/{run}/{year}")
+    return PatientInfoResponse(
+        hn=hn,
+        patient_name=data.get("patient_name"),
+        age=data.get("age"),
+        gender=data.get("gender"),
+        diagnoses=[
+            DiagnosisItem(
+                icd_code=d["icd_code"],
+                icd_group=d.get("icd_group", d["icd_code"]),
+                icd_name=d.get("icd_name"),
+                last_date=d.get("last_date"),
+            )
+            for d in data.get("diagnoses", [])
+        ],
+        drugs=[
+            DrugItem(
+                drug_code=d["drug_code"],
+                drug_name=d.get("drug_name", d["drug_code"]),
+                last_date=d.get("last_date"),
+            )
+            for d in data.get("drugs", [])
+        ],
+    )

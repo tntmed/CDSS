@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from models import PatientRecommendationResponse
-from services.decision_engine import get_recommendations, get_patient_name, parse_hn
+from models import PatientRecommendationResponse, PatientInfoResponse
+from services.decision_engine import get_recommendations, get_patient_name, get_patient_info, parse_hn
 from ords_client import ords_get
 
 router = APIRouter(prefix="/api", tags=["CDSS"])
@@ -24,6 +24,19 @@ async def patient_recommendations(run: str, year: str):
         total_overdue=sum(1 for r in recs if r.status == "OVERDUE"),
         total_due_soon=sum(1 for r in recs if r.status == "DUE_SOON"),
     )
+
+
+@router.get("/patients/{run}/{year}/info", response_model=PatientInfoResponse)
+async def patient_info(run: str, year: str):
+    hn = f"{run}/{year}"
+    try:
+        parse_hn(hn)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    try:
+        return await get_patient_info(hn)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/rules")
