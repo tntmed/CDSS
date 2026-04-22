@@ -3,9 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/cdss/',
   server: {
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/cdss-api': 'http://localhost:8000',
     },
   },
 })

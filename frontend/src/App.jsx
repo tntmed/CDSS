@@ -22,8 +22,8 @@ export default function App() {
     setPatientInfo(null)
     try {
       const [recRes, infoRes] = await Promise.all([
-        fetch(`/api/patients/${run}/${year}/recommendations`),
-        fetch(`/api/patients/${run}/${year}/info`).catch(() => null),
+        fetch(`/cdss-api/patients/${run}/${year}/recommendations`),
+        fetch(`/cdss-api/patients/${run}/${year}/info`).catch(() => null),
       ])
       if (!recRes.ok) {
         const body = await recRes.json().catch(() => ({}))
