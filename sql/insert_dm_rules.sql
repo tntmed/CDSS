@@ -73,18 +73,37 @@ BEGIN
   -- ============================================================
   MERGE INTO CDSS_DRUG_MAP tgt
   USING (
-    SELECT 'MET500E' HIS_DRUG_CODE,'Metformin 500mg'     HIS_DRUG_NAME,'METFORMIN' DRUG_GROUP FROM DUAL UNION ALL
-    SELECT 'MET850E','Metformin 850mg',                   'METFORMIN'                          FROM DUAL UNION ALL
-    SELECT 'MET1000E','Metformin 1000mg',                 'METFORMIN'                          FROM DUAL UNION ALL
-    SELECT 'INS101E','Insulin Regular',                   'INSULIN'                            FROM DUAL UNION ALL
-    SELECT 'INS102E','Insulin NPH',                       'INSULIN'                            FROM DUAL UNION ALL
-    SELECT 'INS103E','Insulin Glargine',                  'INSULIN'                            FROM DUAL UNION ALL
-    SELECT 'ENA5E', 'Enalapril 5mg',                      'ACEI_ARB'                           FROM DUAL UNION ALL
-    SELECT 'ENA10E','Enalapril 10mg',                     'ACEI_ARB'                           FROM DUAL UNION ALL
-    SELECT 'LOS50E','Losartan 50mg',                      'ACEI_ARB'                           FROM DUAL UNION ALL
-    SELECT 'LOS100E','Losartan 100mg',                    'ACEI_ARB'                           FROM DUAL UNION ALL
-    SELECT 'VLS80E','Valsartan 80mg',                     'ACEI_ARB'                           FROM DUAL UNION ALL
-    SELECT 'RAM5E', 'Ramipril 5mg',                       'ACEI_ARB'                           FROM DUAL
+    -- Metformin (pure)
+    SELECT 'MET101E' HIS_DRUG_CODE,'METFORMIN 500 MG TAB'              HIS_DRUG_NAME,'METFORMIN' DRUG_GROUP FROM DUAL UNION ALL
+    SELECT 'MET116E','METFOR-850 MG TAB (METFORMIN 850)',               'METFORMIN'                          FROM DUAL UNION ALL
+    SELECT 'GLU107E','GLUCOPHAGE XR 1000 MG (METFORMIN)',               'METFORMIN'                          FROM DUAL UNION ALL
+    -- Metformin combinations (combo pills — still trigger renal monitoring)
+    SELECT 'JAR102N','JARDIANCE DUO 12.5/1000 (EMPAGLIFLOZIN/METFORMIN)','METFORMIN'                         FROM DUAL UNION ALL
+    SELECT 'XIG101N','XIGDUO XR 10/1000 (DAPAGLIFLOZIN+METFORMIN)',     'METFORMIN'                          FROM DUAL UNION ALL
+    SELECT 'ZEM102N','ZEMIMET SR 50/1000 (GEMIGLIPTIN+METFORMIN)',       'METFORMIN'                          FROM DUAL UNION ALL
+    SELECT 'GAL102N','GALVUS MET 50/1000 (VILDAGLIPTIN/METFORMIN)',      'METFORMIN'                          FROM DUAL UNION ALL
+    SELECT 'JAN104N','JANUMET XR 50/1000 (SITAGLIPTIN+METFORMIN)',       'METFORMIN'                          FROM DUAL UNION ALL
+    -- Insulin
+    SELECT 'INS244E','INSULIN INSULATARD (NPH)',           'INSULIN'                            FROM DUAL UNION ALL
+    SELECT 'INS243E','INSULIN ACTRAPID (Regular)',         'INSULIN'                            FROM DUAL UNION ALL
+    SELECT 'INS210E','INSULIN ACTRAPID 100IU/ML VIAL (HUMULIN R)','INSULIN'                    FROM DUAL UNION ALL
+    SELECT 'INS233E','INSULATARD 100U/ML (ISOPHANE/HUMULIN N)',   'INSULIN'                    FROM DUAL UNION ALL
+    SELECT 'INS216E','MIXTARD PENFILL 3ML (BIPHASIC/HUMULIN 70/30)','INSULIN'                  FROM DUAL UNION ALL
+    SELECT 'INS235E','TOUJEO SOLOSTAR 300U/ML (GLARGINE)',        'INSULIN'                    FROM DUAL UNION ALL
+    SELECT 'INS224N','NOVOMIX 30 PENFILL (ASPART 30/70)',         'INSULIN'                    FROM DUAL UNION ALL
+    SELECT 'INS236N','RYZODEG FLEXTOUCH (ASPART/DEGLUDEC)',       'INSULIN'                    FROM DUAL UNION ALL
+    SELECT 'INS223N','NOVORAPID PENFILL (INSULIN ASPART)',        'INSULIN'                    FROM DUAL UNION ALL
+    -- ACEI/ARB
+    SELECT 'LOS105E','LOSARTAN 50 MG TAB (LANZAAR)',                   'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'LOS106E','LOSARTAN 100 MG TAB (LANZAAR)',                  'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'ENA103E','ENALAPRIL 5 MG TAB (ANAPRIL)',                   'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'ENA101E','ENARIL 20 MG TAB (ENALAPRIL)',                   'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'DIO101N','DIOVAN 80 MG TAB (VALSARTAN)',                   'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'DIO102N','DIOVAN 160 MG TAB (VALSARTAN)',                  'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'COD104N','CO-DIOVAN 80/12.5 MG TAB (VALSARTAN+HCTZ)',     'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'ENT101N','ENTRESTO 100 MG (SACUBITRIL/VALSARTAN)',         'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'COV103N','COVERSYL ARGININE 5 MG TAB (PERINDOPRIL)',       'ACEI_ARB'              FROM DUAL UNION ALL
+    SELECT 'MIC101N','MICARDIS 40 MG TAB (TELMISARTAN)',               'ACEI_ARB'              FROM DUAL
   ) s ON (tgt.HIS_DRUG_CODE = s.HIS_DRUG_CODE)
   WHEN NOT MATCHED THEN
     INSERT (HIS_DRUG_CODE,HIS_DRUG_NAME,DRUG_GROUP,IS_ACTIVE,CREATED_AT,CREATED_BY)
