@@ -2,12 +2,16 @@ import { useState } from 'react'
 import PatientSearch from './components/PatientSearch'
 import PatientSummary from './components/PatientSummary'
 import RecommendationTable from './components/RecommendationTable'
+import Login from './components/Login'
 
 export default function App() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem('cdss_auth') === '1')
   const [loading, setLoading]         = useState(false)
   const [data, setData]               = useState(null)
   const [patientInfo, setPatientInfo] = useState(null)
   const [error, setError]             = useState(null)
+
+  if (!authed) return <Login onLogin={() => setAuthed(true)} />
 
   const handleSearch = async (hn) => {
     const parts = hn.trim().split('/')

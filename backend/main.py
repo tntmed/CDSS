@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from ords_client import close_client
 from routers.cdss import router
+from routers.auth import router as auth_router
 
 
 @asynccontextmanager
@@ -20,6 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 app.include_router(router)
 
 
